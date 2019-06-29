@@ -108,3 +108,50 @@ GROUP BY Country, City
 ORDER BY TotalCustomer DESC
 
 --22
+SELECT ProductID, ProductName, UnitsInStock, ReorderLevel
+FROM Products
+WHERE UnitsInStock < ReorderLevel
+ORDER BY ProductID
+
+--23
+SELECT ProductID, ProductName, UnitsInStock, ReorderLevel
+FROM Products
+WHERE UnitsInStock + UnitsOnOrder <= ReorderLevel AND Discontinued = 0
+ORDER BY ProductID
+
+--24
+SELECT CustomerID, CompanyName, Region
+FROM Customers
+ORDER BY (CASE WHEN Region is null THEN 1 ELSE 0 END), Region, CustomerID
+-- 使用 CASE 语句来生成临时列，根据临时列将Region中的Null放到后面去
+
+--25
+SELECT TOP 3 ShipCountry, AVG(Freight) AS AverageFreight
+FROM Orders
+GROUP BY ShipCountry
+ORDER BY AverageFreight DESC
+
+--26
+SELECT TOP 3 ShipCountry, AVG(Freight) AS AverageFreight
+FROM Orders
+WHERE YEAR(OrderDate) = 2015
+GROUP BY ShipCountry
+ORDER BY AverageFreight DESC
+
+--27
+SELECT OrderDate
+FROM Orders
+WHERE OrderDate BETWEEN '1/1/2015' AND '1/1/2016'
+ORDER BY OrderDate
+--注意日期是选择到该日子的开头，而不是结束
+
+--28
+SELECT TOP 3 ShipCountry, AVG(Freight) AS AverageFreight
+FROM Orders
+WHERE DATEDIFF(month, OrderDate, 
+	(SELECT Top 1 OrderDate
+	FROM Orders
+	ORDER BY OrderDate DESC)
+	) <= 12
+GROUP BY ShipCountry
+ORDER BY AverageFreight DESC
