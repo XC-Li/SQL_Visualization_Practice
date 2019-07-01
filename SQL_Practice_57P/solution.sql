@@ -155,3 +155,55 @@ WHERE DATEDIFF(month, OrderDate,
 	) <= 12
 GROUP BY ShipCountry
 ORDER BY AverageFreight DESC
+
+--29
+SELECT Employees.EmployeeID, Employees.LastName, Orders.OrderID, Products.ProductName, OrderDetails.Quantity
+FROM Orders
+LEFT JOIN Employees
+ON Orders.EmployeeID = Employees.EmployeeID
+LEFT JOIN OrderDetails
+ON Orders.OrderID = OrderDetails.OrderID
+LEFT JOIN Products
+ON Products.ProductID = OrderDetails.ProductID
+ORDER BY Orders.OrderID, Products.ProductID
+
+--30
+SELECT Customers.CustomerID, Orders.CustomerID
+FROM Customers
+LEFT JOIN Orders
+ON Customers.CustomerID = Orders.CustomerID
+WHERE Orders.CustomerID is null
+
+--31  需要检查
+SELECT Customers.CustomerID
+FROM Customers
+LEFT JOIN
+	(SELECT DISTINCT Customers.CustomerID
+	FROM Customers
+	LEFT JOIN Orders
+	ON Customers.CustomerID = Orders.CustomerID
+	WHERE Orders.EmployeeID =4) AS Temp
+ON Customers.CustomerID = Temp.CustomerID
+WHERE Temp.CustomerID is Null
+
+--advanced
+
+--32 注意复杂语句的缩进
+SELECT 
+	Customers.CustomerID, 
+	Customers.CompanyName, Orders.OrderID, 
+	TotalOrderAmount = SUM(OrderDetails.Quantity * OrderDetails.UnitPrice)
+FROM OrderDetails
+	LEFT JOIN Orders
+		ON OrderDetails.OrderID = Orders.OrderID
+	LEFT JOIN Customers
+		ON Orders.CustomerID = Customers.CustomerID
+WHERE YEAR(Orders.OrderDate) = 2016 
+GROUP BY --先用Group by，后用Having
+	Customers.CustomerID,
+	Customers.CompanyName,
+	Orders.OrderID
+HAVING SUM(OrderDetails.Quantity * OrderDetails.UnitPrice) >= 10000
+ORDER BY TotalOrderAmount DESC
+
+--33
